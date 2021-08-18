@@ -4,19 +4,24 @@ const express = require('express')
 const cors = require('cors')
 
 const { dbConnection } = require('./database/config')
-
+/* APP Express */
 const app = express()
 
-app.use(cors());
+/* Parseo body */
+app.use( express.json() )
 
+/* CORS */
+app.use(cors());
+/* Conexion BD */
 dbConnection();
 
+/* Funcionalidad */
 
-app.get('/', (req, res) => {
-    console.log('/')
-    res.status(200).json({ status: 'success'})
-})
+app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/login', require('./routes/auth'));
 
+/* Publico API */
+// eslint-disable-next-line no-undef
 app.listen(process.env.PORT,()=>{
     console.log('Servidor online')
 });

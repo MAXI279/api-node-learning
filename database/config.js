@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 const dbConnection = async () => {
     try {
+        // eslint-disable-next-line no-undef
         await mongoose.connect(process.env.DB_CNN,{
             useNewUrlParser: true,
             useUnifiedTopology: true,

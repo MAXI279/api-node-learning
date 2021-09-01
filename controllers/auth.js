@@ -85,7 +85,28 @@ const loginGoogle = async (req, res = response) => {
     }
 }
 
+const renewToken = async (req, res = response) => {
+
+    const uid = req.uid
+    try {
+
+        const token = await generarJWT(uid)
+        res.status(200).json({
+            ok: true,
+            token
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Ha ocurrido un error inesperado, reintente'
+        })
+    }
+}
+
 module.exports = {
     login,
-    loginGoogle
+    loginGoogle,
+    renewToken
 }

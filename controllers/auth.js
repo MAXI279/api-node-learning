@@ -1,7 +1,8 @@
 const { response } = require('express');
 const Usuario = require('../models/usuario')
 const bcrypt = require('bcryptjs')
-const { generarJWT } = require('../helpers/jwt')
+const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
 
 const login = async (req, res = response) => {
 
@@ -39,6 +40,52 @@ const login = async (req, res = response) => {
 
 }
 
+const loginGoogle = async (req, res = response) => {
+
+    const googleToken = req.body.token
+
+    try {
+
+        const { name, email, picture } = await googleVerify(googleToken)
+
+        //verificar si usuario ya existe en DB
+        const usuarioDB = await Usuario.findOne({ email });
+        let usuario;
+
+        if(!usuarioDB){
+            usuario = new Usuario({
+                    nombre: name,
+                    email,
+                    password: '@@@',
+                    img: picture,
+                    google: true,
+                    role: 'USER_ROLE'
+            })
+        } else{
+            usuario = usuarioDB
+            usuario.google = true;
+            usuario.password = '@@@'
+        }
+
+        await usuario.save();
+
+        const token = await generarJWT(usuario.id)
+        res.status(200).json({
+            ok: true,
+            usuario,
+            token
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Ha ocurrido un error inesperado, reintente'
+        })
+    }
+}
+
 module.exports = {
-    login
+    login,
+    loginGoogle
 }

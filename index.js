@@ -10,6 +10,9 @@ const app = express()
 /* Parseo body */
 app.use( express.json() )
 
+/* public static directory */
+app.use( express.static('public') )
+
 /* CORS */
 app.use(cors());
 /* Conexion BD */
